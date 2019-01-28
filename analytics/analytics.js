@@ -1,7 +1,7 @@
 
 'use strict';
 
-window.onbeforeunload = function() { return 'hi';};
+
 
 // Import the Adaptors or use preloaded ones
 const Adaptors = [
@@ -79,24 +79,28 @@ function filterEvents(e){
   //Prevents page refresh for logging
   if(tags.includes(e.target.tagName)){
     for(const { requirements, analyzers, name } of DEVHUB_ANALYTICS){
-      for (const { property, test } of requirements) {
-        const event_attribute = e.target[property];
-        if (event_attribute && test.test(event_attribute)) {
-
-          Adaptors
-          // If I had the existing code for DevHub's analytics, in v2 I would format the last step to match what is already in place
-          // For processors that need the target url, we could send it through easily as it is already in the event 
-            .map(analytic => {
-              const { adaptor } = analytic;
-              analytic && 
-              window[adaptor] && 
-              analyzers.includes(adaptor) && 
+      if(checkAnalyticRequirements(requirements, e)){
+        // If I had the existing code for DevHub's analytics, in v2 I would format the last step to match what is already in place
+        // For processors that need the target url, we could send it through easily as it is already in the event 
+        Adaptors
+          .map(analytic => {
+            const { adaptor } = analytic;
+            analytic &&
+              window[adaptor] &&
+              analyzers.includes(adaptor) &&
               analytic.analyze(e, { category: name });
-            });
-        }
+          });
       }
     }
   }
+}
+
+function checkAnalyticRequirements(requirements, e){
+  for (const { property, test } of requirements) {
+    const event_attribute = e.target[property];
+    if (!(event_attribute && test.test(event_attribute))) return false;
+  }
+  return true;
 }
 
 function logger (e, options) {
@@ -106,6 +110,9 @@ function logger (e, options) {
 }
 
 (function () {
+  // Prevent page refresh or leaving page on link click or form submit, for testing purposes
+  window.onbeforeunload = function () { return 'Please stay on this page.'; };
+
   events.forEach(event => document.addEventListener(event, filterEvents));
 })();
 
