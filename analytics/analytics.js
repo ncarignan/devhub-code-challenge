@@ -1,21 +1,21 @@
 
 'use strict';
 
-window.onbeforeunload = () => null;
+window.onbeforeunload = function() { return 'hi';};
 
 // Import the Adaptors or use preloaded ones
 const Adaptors = [
   {
     adaptor: 'ga',
-    analyze: function (e, options) { console.log(`the ${this.adaptor} adaptor consumed a '${options.category}' event`); },
+    analyze:  logger,
   },
   {
     adaptor: 'mixpanel',
-    analyze: function (e, options) { console.log(`the ${this.adaptor} adaptor consumed a '${options.category}' event`); },
+    analyze: logger,
   },
   {
     adaptor: 'optimizely',
-    analyze: function (e, options) { console.log(`the ${this.adaptor} adaptor consumed a '${options.category}' event`); },
+    analyze: logger,
   },
 ];
 
@@ -29,14 +29,14 @@ const DEVHUB_ANALYTICS = [
     requirements: [
       { property: 'href', test: /tel:/ }
     ],
-    analyzers: ['ga', 'mixpanel', 'optimizely'],
+    analyzers: ['ga', 'mixpanel'],
     extracts: []
   },
   {
     name: 'link_facebook',
     event: 'click',
     tagName: 'A',
-    analyzers: ['ga', 'mixpanel', 'optimizely'],
+    analyzers: [ 'optimizely'],
     requirements: [
       { property: 'hostname', test: /.*facebook\.com.*/ }
     ],
@@ -46,7 +46,7 @@ const DEVHUB_ANALYTICS = [
     name: 'link_outgoing',
     event: 'click',
     tagName: 'A',
-    analyzers: ['ga', 'mixpanel', 'optimizely'],
+    analyzers: ['mixpanel'],
     requirements: [
       { property: 'hostname', test: /^((?!localhost).)*$/ } //regex needs to be adapted to reflect the domain name
     ],
@@ -56,7 +56,7 @@ const DEVHUB_ANALYTICS = [
     name: 'form_submit',
     event: 'submit',
     tagName: 'FORM',
-    analyzers: ['ga', 'mixpanel', 'optimizely'],
+    analyzers: ['ga'],
     requirements: [
       { property: 'tagName', test: /^FORM/ }
     ],
@@ -77,7 +77,6 @@ const { tags, events } = DEVHUB_ANALYTICS.reduce((a, c) => {
 // First by tag type, then by individual categorizations, this is O(n) time complexity where n is the amount of categories we have setup
 function filterEvents(e){
   //Prevents page refresh for logging
-  e.preventDefault();
   if(tags.includes(e.target.tagName)){
     for(const { requirements, analyzers, name } of DEVHUB_ANALYTICS){
       for (const { property, test } of requirements) {
@@ -98,6 +97,12 @@ function filterEvents(e){
       }
     }
   }
+}
+
+function logger (e, options) {
+  let li = document.createElement('li');
+  li.textContent = `the ${this.adaptor} adaptor consumed a '${options.category}' event`;
+  document.getElementById('results').appendChild(li);
 }
 
 (function () {

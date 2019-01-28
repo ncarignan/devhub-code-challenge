@@ -1,85 +1,99 @@
-*{
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+* {
   box-sizing: border-box;
-  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+html {
   height: 100%;
-  text-align: center;
 }
 
 body {
-  grid-template-columns: 1fr 4fr 1fr;
-  grid-template-rows: 90px auto 20px;
-  padding: 20px;
   background: #fff;
   color: #000;
   font-family: Raleway, sans-serif;
-  line-height: .9em;
+  line-height: 1.3em;
   word-spacing: 0.1em;
   letter-spacing: 0.07em;
+  height: 100%;
 }
 
 
-header {
-  grid-column: 1 / 4;
-  grid-row: 1 / 2;
+
+a {
+  color: #888;
+  text-decoration: none;
+  cursor: hand;
+  font-weight: 900;
 }
 
-main {
-  grid-column: 2 / 3;
-  grid-row: 2 / 3;
+h1 {
+  text-align: center;
+  font-family: Raleway, sans-serif;
+  font-size: 1.8em;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  margin-bottom: 1.5em;
+  line-height: 1.5em;
 }
 
-footer {
-  grid-column: 1 / 4;
-  grid-row: 3 / 4;
+h2 {
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-align: center;   
+  margin-top: 1.2em;
+  margin-bottom: 0.7em;
 }
 
-nav > ul {
-  grid-auto-flow: row;
+li, input {
+    display: inline-block;
+    white-space: nowrap;
+    margin: 0.2em;
+    padding: 0.5em 1em;
+    border: solid 1px;
+    border-radius: 0.6em;
+    font-size: 1.1em;
 }
 
-li {
-  padding-top: 2em;
-  padding: 0.5em 1em;
-  border: solid 1px;
-  border-radius: 0.6em;
-  font-size: .7em;
-  width: 8em;
-  height: 4em;
+#results li {
+  border: none;
 }
 
-input, button {
-  outline: none;
-  background: inherit;
-  border: 1px black solid;
-  background: linear-gradient(#ddd, #ccc);
-  padding-top: 2em;
-  padding: 0.5em 1em;
-  border: solid 1px;
-  border-radius: 0.6em;
-  font-size: .7em;
-  width: 8em;
-  height: 5em;
+#results {
+  overflow : auto;
+  height: 80vh;
 }
 
-form {
-  padding: 5em;
+
+
+button {
+  font-weight: 900;
+  color: #888;
+  background: #fff;
+  border: none;
+  border-radius: 0.5em;
+  font-weight: 900;
+  font-size: 1.1em;
+
 }
 
-.deck {
-  display: grid;
-  justify-items: center;
-  align-items: center
+button:active {
+  color: #fff;
+  background: #333;
 }
 
-.left {
-  grid-column-start: 1;
-  border-top-left-radius: 0.6em;
-  border-bottom-left-radius: 0.6em;
+button:hover {
+  background: #eee;
+  cursor: pointer;
 }
 
-.right {
-  grid-column-start : 3;
-  border-top-right-radius: 0.6em;
-  border-bottom-right-radius: 0.6em;
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
 }
+
+
 
