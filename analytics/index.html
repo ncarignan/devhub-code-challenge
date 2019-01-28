@@ -4,29 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Document</title>
+  <title>DevHub Test</title>
+  <script>window.ga = {}; window.mixpanel = {};</script>
+  <link rel="stylesheet" href="reset.css">
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <ul>
-    <li><a href="http://localhost:8080/">Home</a></li>
-    <li><a href="#">Internal</a></li>
-    <li><a href="tel:959-595-9590">Phone Number</a></li>
-    <li><a target="_blank" href="https://medium.com/">Medium</a></li>
-    <li><a target="_blank" href="https://medium.com/">External</a></li>
-    <li><a target="_blank" href="https://facebook.com/">Facebook Secured</a></li>
-    <li><a target="_blank" href="http://facebook.com/">Facebook Unsecured</a></li>
-  </ul>
-  <form action="/" method="get">
-    <input type="submit" value="Get Req /">
-  </form>
-  <form action="/myapi" method="post">
-    <input type="submit" value="Post Req /myapi">
-  </form>
-  <form>
-    <input type="text" value="home form">
-    <input type="submit" value="home form">
-  </form>
-
+<body class="deck">
+  <header>
+    
+  </header>
+  <aside class="left deck">
+    <form action="/" method="get">
+      <input type="submit" value="Get Req /">
+    </form>
+    <form action="/myapi" method="post">
+      <input type="submit" value="Post Req /myapi">
+    </form>
+  </aside>
+  <aside class="right">
+    <nav>
+      <ul class="deck">
+        <li><a href="#">Internal</a></li>
+        <li><a href="tel:959-595-9590">Phone Number</a></li>
+        <li><a target="_blank" href="https://medium.com/">Medium</a></li>
+        <li><a target="_blank" href="https://medium.com/">External</a></li>
+        <li><a target="_blank" href="https://facebook.com/">Facebook Secured</a></li>
+        <li><a target="_blank" href="http://facebook.com/">Facebook Unsecured</a></li>
+      </ul>
+    </nav>
+    
+  </aside>
+  <main>
+    <ul class="deck"></ul>
+  </main>
+  <footer></footer>  
   <script src="analytics.js"></script>
 </body>
 </html>

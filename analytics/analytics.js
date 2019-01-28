@@ -1,9 +1,26 @@
 
 'use strict';
 
-let PAGE_ANALYTICS = []; 
-// Setup an array with all the analytic tracker definitions
-// Should be imported from another file either using require.js or react imports;
+window.onbeforeunload = () => null;
+
+// Import the Adaptors or use preloaded ones
+const Adaptors = [
+  {
+    adaptor: 'ga',
+    analyze: function (e, options) { console.log(`the ${this.adaptor} adaptor consumed a '${options.category}' event`); },
+  },
+  {
+    adaptor: 'mixpanel',
+    analyze: function (e, options) { console.log(`the ${this.adaptor} adaptor consumed a '${options.category}' event`); },
+  },
+  {
+    adaptor: 'optimizely',
+    analyze: function (e, options) { console.log(`the ${this.adaptor} adaptor consumed a '${options.category}' event`); },
+  },
+];
+
+// Set up an array with all the analytic tracker definitions
+// Should be imported from another file either using require.js or ES6 imports;
 const DEVHUB_ANALYTICS = [
   {
     name: 'link_call',
@@ -19,9 +36,9 @@ const DEVHUB_ANALYTICS = [
     name: 'link_facebook',
     event: 'click',
     tagName: 'A',
-    analyzers: ['mixpanel', 'optimizely'],
+    analyzers: ['ga', 'mixpanel', 'optimizely'],
     requirements: [
-      { property: 'hostname', test: /facebook\.com/ } // TODO: fix facebook
+      { property: 'hostname', test: /.*facebook\.com.*/ }
     ],
     extracts: []
   },
@@ -31,7 +48,7 @@ const DEVHUB_ANALYTICS = [
     tagName: 'A',
     analyzers: ['ga', 'mixpanel', 'optimizely'],
     requirements: [
-      { property: 'hostname', test: /^((?!localhost).)*$/ }
+      { property: 'hostname', test: /^((?!localhost).)*$/ } //regex needs to be adapted to reflect the domain name
     ],
     extracts: []
   }, 
@@ -57,62 +74,34 @@ const { tags, events } = DEVHUB_ANALYTICS.reduce((a, c) => {
 
 
 // filters the event against all tracked analytics
-function handleEvents(e){
-  for(const tag of tags){
-    if(e.target.tagName === tag){
-      for(const eTargetCategory of DEVHUB_ANALYTICS){
-        analyze(e, eTargetCategory);
+// First by tag type, then by individual categorizations, this is O(n) time complexity where n is the amount of categories we have setup
+function filterEvents(e){
+  //Prevents page refresh for logging
+  e.preventDefault();
+  if(tags.includes(e.target.tagName)){
+    for(const { requirements, analyzers, name } of DEVHUB_ANALYTICS){
+      for (const { property, test } of requirements) {
+        const event_attribute = e.target[property];
+        if (event_attribute && test.test(event_attribute)) {
+
+          Adaptors
+          // If I had the existing code for DevHub's analytics, in v2 I would format the last step to match what is already in place
+          // For processors that need the target url, we could send it through easily as it is already in the event 
+            .map(analytic => {
+              const { adaptor } = analytic;
+              analytic && 
+              window[adaptor] && 
+              analyzers.includes(adaptor) && 
+              analytic.analyze(e, { category: name });
+            });
+        }
       }
     }
   }
 }
 
-// consumes the event, runs regex matches against each analytic category's requirement(s), 
-// then sends it to the propper tracker
-function analyze (e, analytic_category) {
-  const { requirements, analyzers } = analytic_category;
-  for (const { property, test } of requirements){
-    const event_attribute = e.target[property];
-    if (event_attribute && test.test(event_attribute)) {
-      
-      PAGE_ANALYTICS
-      // If I had the existing code for DevHub's analytics, in v2 I would format the last step to match what is already in place
-      // For processors that need the target url, we could send it through easily as it is already in the event 
-        .map(analytic => {
-          analytic && analyzers.includes(analytic.name) && analytic.analyze(e, { category : analytic_category.name });
-        });
-    }
-  }
-}
-
-
-
-
-
 (function () {
-  // Discover which analytics have loaded, 
-  // I am not sure what optimizely's code looks like or how I can interface with it, but that would be improved in v2
-
-  PAGE_ANALYTICS = [
-    true && { 
-      name: 'ga',
-      analyze: function (e, options) { console.log(`${this.name} consumed a '${options.category}' event on a '${e.target.tagName}' element`);},
-    }, 
-    window.mixpanel && {
-      name: 'mixpanel',
-      analyze: function (e, options) { console.log(`${this.name} consumed a '${options.category}' event on a '${e.target.tagName}' element`); },
-    },
-    window.optimizely && {
-      name: 'optimizely',
-      analyze: function (e, options) { console.log(`${this.name} consumed a '${options.category}' event on a '${e.target.tagName}' element`); },
-    },
-  ];
-  /*
-    Listen for all tracked event types on the document level
-    Listening on the document level is more performance efficient than targetting individual event types
-    https://gomakethings.com/why-event-delegation-is-a-better-way-to-listen-for-events-in-vanilla-js/
-  */
-  events.forEach(event => document.addEventListener(event, handleEvents));
+  events.forEach(event => document.addEventListener(event, filterEvents));
 })();
 
 
